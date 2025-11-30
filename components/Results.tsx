@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CalculationResult } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Download, Share2, DollarSign, Heart, Wind, BrainCircuit, Copy, Printer, Check, Clock } from 'lucide-react';
+import { Download, DollarSign, Heart, Wind, BrainCircuit, Copy, Check, Clock, Briefcase, Calendar, Zap } from 'lucide-react';
 import { generateTimeInsight } from '../services/geminiService';
 
 interface ResultsProps {
@@ -21,7 +21,15 @@ export const Results: React.FC<ResultsProps> = ({ result, hourlyRate }) => {
     { name: 'Weekend/Non-Work', value: result.weekendDays },
   ];
 
-  const moneyEarned = (result.totalHours * hourlyRate).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  // Calculations for extra features
+  const standardWorkHours = result.businessDays * 8;
+  const workEarnings = (standardWorkHours * hourlyRate).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const continuousEarnings = (result.totalHours * hourlyRate).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  
+  const totalWeeks = (result.totalDays / 7).toFixed(1);
+  const totalFortnights = (result.totalDays / 14).toFixed(2);
+  const percentageOfYear = ((result.totalDays / 365.25) * 100).toFixed(2);
+  const percentageOfLife = ((result.totalDays / (80 * 365.25)) * 100).toFixed(5); // Based on 80 years
 
   const handleGetInsight = async () => {
     setLoadingAi(true);
@@ -43,26 +51,6 @@ export const Results: React.FC<ResultsProps> = ({ result, hourlyRate }) => {
     } catch (err) {
         console.error('Failed to copy', err);
     }
-  };
-
-  const handleShare = async () => {
-      const shareData = {
-          title: 'Time Duration Result',
-          text: `I just calculated a duration of ${result.formattedDuration} (${result.totalDays} days)! Check it out.`,
-          url: window.location.href
-      };
-
-      if (navigator.share) {
-          try {
-              await navigator.share(shareData);
-          } catch (err) {
-              console.log('Error sharing', err);
-          }
-      } else {
-          // Fallback
-          copyToClipboard();
-          alert('Link copied to clipboard (Share API not supported on this device)');
-      }
   };
 
   return (
@@ -119,7 +107,7 @@ export const Results: React.FC<ResultsProps> = ({ result, hourlyRate }) => {
             </div>
         </div>
 
-        {/* Breakdown Stats */}
+        {/* Detailed Breakdown */}
         <div className="bg-white p-6 rounded-2xl shadow-lg">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Detailed Breakdown</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -143,17 +131,79 @@ export const Results: React.FC<ResultsProps> = ({ result, hourlyRate }) => {
         </div>
       </div>
 
-      {/* Fun Facts & Money */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 rounded-2xl shadow border border-emerald-200">
-            <div className="flex items-center space-x-2 text-emerald-700 mb-2">
-                <DollarSign size={20} />
-                <h3 className="font-bold">Time is Money</h3>
+      {/* EXTRA FEATURE: Productivity Analysis */}
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-6 text-white shadow-lg print-break-inside">
+         <div className="flex items-center gap-2 mb-4">
+            <Briefcase className="text-blue-400" />
+            <h3 className="text-lg font-bold">Productivity & Work Analysis</h3>
+         </div>
+         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-slate-700/50 p-4 rounded-xl">
+                <p className="text-slate-400 text-xs uppercase mb-1">Standard Work Hours (8h/day)</p>
+                <p className="text-2xl font-bold text-blue-300">{standardWorkHours.toLocaleString()} hrs</p>
             </div>
-            <p className="text-sm text-emerald-600 mb-2">At ${hourlyRate}/hr:</p>
-            <p className="text-2xl font-bold text-emerald-900">{moneyEarned}</p>
+             <div className="bg-slate-700/50 p-4 rounded-xl">
+                <p className="text-slate-400 text-xs uppercase mb-1">Work Earnings (@ ${hourlyRate}/hr)</p>
+                <p className="text-2xl font-bold text-green-400">{workEarnings}</p>
+            </div>
+             <div className="bg-slate-700/50 p-4 rounded-xl">
+                <p className="text-slate-400 text-xs uppercase mb-1">24/7 Earnings (Continuous)</p>
+                <p className="text-2xl font-bold text-purple-400">{continuousEarnings}</p>
+            </div>
+         </div>
+      </div>
+
+       {/* EXTRA FEATURE: Alternative Units & Perspective */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <Calendar className="text-orange-500" size={20}/> Alternative Units
+             </h3>
+             <div className="space-y-3">
+                <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                    <span className="text-gray-600">Weeks</span>
+                    <span className="font-bold text-gray-900">{totalWeeks}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                    <span className="text-gray-600">Fortnights</span>
+                    <span className="font-bold text-gray-900">{totalFortnights}</span>
+                </div>
+                 <div className="flex justify-between items-center pb-2">
+                    <span className="text-gray-600">Decades</span>
+                    <span className="font-bold text-gray-900">{(result.totalDays / 3652.5).toFixed(4)}</span>
+                </div>
+             </div>
           </div>
 
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <Zap className="text-yellow-500" size={20}/> Perspective
+             </h3>
+             <div className="space-y-4">
+                <div>
+                    <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-600">% of a Year</span>
+                        <span className="font-bold">{percentageOfYear}%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${Math.min(parseFloat(percentageOfYear), 100)}%` }}></div>
+                    </div>
+                </div>
+                 <div>
+                    <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-600">% of Average Life (80y)</span>
+                        <span className="font-bold">{percentageOfLife}%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-green-500 h-2 rounded-full" style={{ width: `${Math.min(parseFloat(percentageOfLife), 100)}%` }}></div>
+                    </div>
+                </div>
+             </div>
+          </div>
+      </div>
+
+      {/* Fun Facts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-gradient-to-br from-rose-50 to-rose-100 p-6 rounded-2xl shadow border border-rose-200">
             <div className="flex items-center space-x-2 text-rose-700 mb-2">
                 <Heart size={20} />
@@ -219,11 +269,8 @@ export const Results: React.FC<ResultsProps> = ({ result, hourlyRate }) => {
             {copied ? <Check size={18} className="text-green-600"/> : <Copy size={18} />} 
             {copied ? 'Copied!' : 'Copy Results'}
         </button>
-        <button onClick={handlePrint} className="flex items-center gap-2 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-medium transition-all">
-            <Printer size={18} /> Print / Save PDF
-        </button>
-        <button onClick={handleShare} className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1">
-            <Share2 size={18} /> Share Calculation
+        <button onClick={handlePrint} className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 rounded-xl font-medium transition-all transform hover:-translate-y-1">
+            <Download size={18} /> Download in PDF
         </button>
       </div>
     </div>
