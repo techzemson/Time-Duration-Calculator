@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CalculationResult } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Download, DollarSign, Heart, Wind, BrainCircuit, Copy, Check, Clock, Briefcase, Calendar, Zap } from 'lucide-react';
+import { DollarSign, Heart, Wind, BrainCircuit, Copy, Check, Clock, Briefcase, Calendar, Zap } from 'lucide-react';
 import { generateTimeInsight } from '../services/geminiService';
 
 interface ResultsProps {
@@ -36,10 +36,6 @@ export const Results: React.FC<ResultsProps> = ({ result, hourlyRate }) => {
     const text = await generateTimeInsight(result.formattedDuration);
     setAiInsight(text);
     setLoadingAi(false);
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   const copyToClipboard = async () => {
@@ -268,9 +264,6 @@ export const Results: React.FC<ResultsProps> = ({ result, hourlyRate }) => {
         <button onClick={copyToClipboard} className="flex items-center gap-2 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-medium transition-all min-w-[160px] justify-center">
             {copied ? <Check size={18} className="text-green-600"/> : <Copy size={18} />} 
             {copied ? 'Copied!' : 'Copy Results'}
-        </button>
-        <button onClick={handlePrint} className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 rounded-xl font-medium transition-all transform hover:-translate-y-1">
-            <Download size={18} /> Download in PDF
         </button>
       </div>
     </div>

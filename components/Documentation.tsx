@@ -52,8 +52,8 @@ export const Documentation: React.FC = () => {
             <div className="flex gap-4">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center">4</div>
                 <div>
-                    <h4 className="font-bold text-lg text-gray-900">Calculate & Download</h4>
-                    <p className="text-gray-600 mt-1">Click the "Calculate Duration" button. Once the analysis is complete, you can generate an AI insight or click "Download in PDF" to save a report.</p>
+                    <h4 className="font-bold text-lg text-gray-900">Calculate & Analyze</h4>
+                    <p className="text-gray-600 mt-1">Click "Calculate Duration" to instantly see detailed stats, visualization charts, and life perspective data. You can copy the summary to your clipboard.</p>
                 </div>
             </div>
         </div>
@@ -100,7 +100,7 @@ export const Documentation: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-2">
                     <CheckCircle size={18} className="text-green-500 mt-1" />
-                    <span className="text-gray-600"><strong>Visual Reports:</strong> Beautiful pie charts and progress bars for presentations.</span>
+                    <span className="text-gray-600"><strong>Data Visualization:</strong> Clear charts and breakdown stats to visualize your duration.</span>
                 </li>
             </ul>
           </div>
